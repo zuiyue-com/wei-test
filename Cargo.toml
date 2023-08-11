@@ -3,6 +3,9 @@ name = "wei-test"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "wei test"
+documentation = "https://github.com/zuiyue-com/wei-test"
+homepage = "https://github.com/zuiyue-com/wei-test"
+license = "MIT OR Apache-2.0"
 
 [dependencies]
