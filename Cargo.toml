@@ -9,3 +9,12 @@ homepage = "https://github.com/zuiyue-com/wei-test"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
+
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = 'abort'
+
+[profile.dev]
+panic = 'abort'
