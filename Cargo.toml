@@ -11,10 +11,12 @@ license = "MIT OR Apache-2.0"
 [dependencies]
 
 
-[profile.release]
-lto = true
-codegen-units = 1
-panic = 'abort'
+# [profile.release]
+# lto = true
+# codegen-units = 1
+# panic = 'abort'
+# opt-level = 'z'
 
-[profile.dev]
-panic = 'abort'
+# [profile.dev]
+# panic = 'abort'
+
