@@ -9,14 +9,6 @@ homepage = "https://github.com/zuiyue-com/wei-test"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-rand = "0.8.4"
 
-# [profile.release]
-# lto = true
-# codegen-units = 1
-# panic = 'abort'
-# opt-level = 'z'
-
-# [profile.dev]
-# panic = 'abort'
-
+tokio = { version = "1", features = ["full"] }
+sled = "0.34.7"
