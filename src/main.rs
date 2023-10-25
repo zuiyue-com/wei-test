@@ -12,9 +12,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     match command.as_str() {
         "t1" => {
             t1().await?;
-            tokio::time::sleep(tokio::time::Duration::from_secs(15)).await;
         },
-        "t2" => t1().await?,
+        "t2" => t2().await?,
         _ => {
             let tree = sled::open("./welcome-to-sled")?;
             let mut iter = tree.iter();
@@ -45,9 +44,22 @@ async fn t1() -> Result<(), Box<dyn std::error::Error>> {
         "key"
     )?;
 
+    tokio::time::sleep(tokio::time::Duration::from_secs(65)).await;
 
     tree.flush()?;
 
     Ok(()) 
 
+}
+
+async fn t2() -> Result<(), Box<dyn std::error::Error>> {
+    let db = sled::open("./welcome-to-sled")?;
+    
+    let mut subscriber = db.watch_prefix(vec![]);
+
+    let tree_2 = db.clone();
+
+
+
+    Ok(())
 }
