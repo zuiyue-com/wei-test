@@ -10,6 +10,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     match command.as_str() {
+        "t3" => { 
+            t3().await?;
+        }
         "t1" => {
             t1().await?;
         },
@@ -24,6 +27,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let key = String::from_utf8(key.to_vec()).unwrap();
                 let value = String::from_utf8(value.to_vec()).unwrap();
                 
+                if key.starts_with("tree_1") {
+                    continue;
+                }
                 println!("{}: {}", key, value);
             }
         }
@@ -54,12 +60,69 @@ async fn t1() -> Result<(), Box<dyn std::error::Error>> {
 
 async fn t2() -> Result<(), Box<dyn std::error::Error>> {
     let db = sled::open("./welcome-to-sled")?;
+
+    let subscriber = db.watch_prefix("GPU_");
+
+    let db_1 = db.clone();
+    let thread1 = std::thread::spawn(move || {
+        db.insert("GPU_1", b"456").unwrap();
+        std::thread::sleep(std::time::Duration::from_secs(3));
+        db.insert("GPU_2", b"456").unwrap();
+    });
+
+    std::thread::spawn(move || {
+        db_1.remove("GPU_2").unwrap();
+    });
+
+    std::thread::spawn(move || {
     
-    let mut subscriber = db.watch_prefix(vec![]);
+            for event in subscriber.take(2) {
+                match event {
+                    sled::Event::Insert{ key, value } => {
+                        println!("insert {:?} {:?}", key, value);
+                    },
+                    sled::Event::Remove {key } => {
+                        println!("remove {:?}", key);
+                    }
+                }
+            }
+            
+    
+    });
 
-    let tree_2 = db.clone();
+    thread1.join().unwrap();
+    Ok(())
+}
 
+async fn t3() -> Result<(), Box<dyn std::error::Error>> {
+    use std::thread;
+    use std::sync::mpsc;
 
+    let (tx, rx) = mpsc::channel();
 
+    thread::spawn(move || {
+        for i in 1..10 {
+            //let val = String::from("hello");
+            tx.send(i).unwrap();
+            std::thread::sleep(std::time::Duration::from_secs(1));
+        
+        }
+        println!("finished tx");
+    });
+
+    let thread = thread::spawn(move || {
+        loop {
+            match rx.recv() {
+                Ok(val) => {
+                    println!("Got: {}", val);
+                    std::thread::sleep(std::time::Duration::from_secs(5));
+                    println!("End: {}", val);
+                }
+                Err(_) => continue,
+            }
+        }
+    });
+
+    thread.join().unwrap();
     Ok(())
 }
